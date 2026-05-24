@@ -1,4 +1,4 @@
-import { addClient, removeClient } from '../leads/route'
+import { addClient, removeClient } from '@/lib/sse'
 
 export const dynamic = 'force-dynamic'
 

@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { assignProviders } from '@/lib/allocation'
+import { notifyClients } from '@/lib/sse'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
@@ -14,7 +15,6 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Check duplicate — same phone + same service
     const existing = await prisma.lead.findUnique({
       where: { phone_serviceId: { phone, serviceId: Number(serviceId) } },
     })
@@ -26,7 +26,6 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Create lead
     const lead = await prisma.lead.create({
       data: {
         name,
@@ -37,10 +36,7 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    // Assign providers
     await assignProviders(lead.id, Number(serviceId))
-
-    // Notify SSE clients
     notifyClients()
 
     return NextResponse.json({ success: true, leadId: lead.id }, { status: 201 })
@@ -60,25 +56,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     )
   }
-}
-
-// SSE clients store
-const clients = new Set<ReadableStreamDefaultController>()
-
-export function notifyClients() {
-  clients.forEach((controller) => {
-    try {
-      controller.enqueue('data: update\n\n')
-    } catch {
-      clients.delete(controller)
-    }
-  })
-}
-
-export function addClient(controller: ReadableStreamDefaultController) {
-  clients.add(controller)
-}
-
-export function removeClient(controller: ReadableStreamDefaultController) {
-  clients.delete(controller)
 }

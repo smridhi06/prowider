@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { assignProviders } from '@/lib/allocation'
-import { notifyClients } from '../leads/route'
+import { notifyClients } from '@/lib/sse'
 import { NextResponse } from 'next/server'
 
 export async function POST() {
