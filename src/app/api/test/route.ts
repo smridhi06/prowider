@@ -3,6 +3,7 @@ import { assignProviders } from '@/lib/allocation'
 import { notifyClients } from '@/lib/sse'
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
 export async function POST() {
   try {
     const services = await prisma.service.findMany()

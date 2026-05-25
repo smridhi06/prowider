@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { POOL_PROVIDERS } from '@/lib/allocation'
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
 export async function POST() {
   try {
     // Create services
